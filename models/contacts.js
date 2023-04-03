@@ -1,63 +1,75 @@
 const fs = require("fs").promises;
+const path = require("path");
 const uniqid = require("uniqid");
+const getContacts = require("./getContacts");
 
-const listContacts = async () => {
+const contactsPath = path.resolve("./models/contacts.json");
+
+const listContacts = async (req, res, next) => {
   try {
-    const contacts = JSON.parse(await fs.readFile("./models/contacts.json"));
+    const contacts = await getContacts();
 
-    return contacts;
-  } catch (err) {
-    console.err(err.message);
+    return res.status(200).json(contacts);
+  } catch (error) {
+    next(error);
   }
 };
 
-const getContactById = async (contactId) => {
+const getContactById = async (req, res, next) => {
   try {
-    const contacts = JSON.parse(await fs.readFile("./models/contacts.json"));
+    const contacts = await getContacts();
+    const { contactId } = req.params;
 
-    const contact = contacts.find((item) => item.id === contactId);
-    return contact;
-  } catch (err) {
-    console.err(err.message);
+    const contactById = contacts.find((contact) => contact.id === contactId);
+
+    return res.json(contactById);
+  } catch (error) {
+    next(error);
   }
 };
 
-const removeContact = async (contactId) => {
+const removeContact = async (req, res, next) => {
   try {
-    const contacts = JSON.parse(await fs.readFile("./models/contacts.json"));
+    const contacts = await getContacts();
+    const { contactId } = req.params;
 
-    const filteredContacts = contacts.filter((item) => item.id !== contactId);
-
-    if (filteredContacts.length !== contacts.length)
-      return { message: "contact deleted" };
-    return { message: "Not found" };
-  } catch (err) {
-    console.err(err.message);
+    const filteredContacts = contacts.filter(
+      (contact) => contact.id !== contactId
+    );
+    await fs.writeFile(contactsPath, JSON.stringify(filteredContacts));
+    res.status(200).json({
+      message: "contact deleted",
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
-const addContact = async (body) => {
+const addContact = async (req, res, next) => {
+  const { name, email, phone } = req.body;
+
+  const newContact = {
+    id: uniqid(),
+    name,
+    email,
+    phone,
+  };
+
   try {
-    const { name, email, phone } = body;
-    const contacts = JSON.parse(await fs.readFile("./models/contacts.json"));
-    const newContact = {
-      id: uniqid(),
-      name,
-      email,
-      phone,
-    };
+    const contacts = await getContacts();
     contacts.push(newContact);
     await fs.writeFile("./models/contacts.json", JSON.stringify(contacts));
-    return newContact;
-  } catch (err) {
-    console.err(err.message);
+    res.status(201).json(newContact);
+  } catch (error) {
+    next(error);
   }
 };
 
-const updateContact = async (contactId, body) => {
+const updateContact = async (req, res, next) => {
   try {
-    const { name, email, phone } = body;
-    const contacts = JSON.parse(await fs.readFile("./models/contacts.json"));
+    const { name, email, phone } = req.body;
+    const { contactId } = req.params;
+    const contacts = await getContacts();
 
     const contact = contacts.find((item) => item.id === contactId);
     contact.name = name;
@@ -69,8 +81,9 @@ const updateContact = async (contactId, body) => {
     contacts[contactIdx] = contact;
 
     await fs.writeFile("./models/contacts.json", JSON.stringify(contacts));
-  } catch (err) {
-    console.err(err.message);
+    res.status(200).json(contact);
+  } catch (error) {
+    next(error);
   }
 };
 
