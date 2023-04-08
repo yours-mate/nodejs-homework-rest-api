@@ -6,7 +6,7 @@ dotenv.config({ path: "./.env" });
 const { PORT, DB_CONTACTS } = process.env;
 
 const connectToContactsDb = (connection) => {
-  mongoose.set("strictQuery", true);
+  // mongoose.set("strictQuery", true);
   return mongoose.connect(connection);
 };
 
