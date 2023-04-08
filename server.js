@@ -5,14 +5,12 @@ dotenv.config({ path: "./.env" });
 
 const { PORT, DB_CONTACTS } = process.env;
 
-// const connectToContactsDb = () => {
-//   mongoose.set("strictQuery", false);
-//   // console.log(process.env.DB_CONTACTS);
-//   return mongoose.connect(DB_CONTACTS || "mongodb://127.0.0.1:27017");
-// };
+const connectToContactsDb = (connection) => {
+  mongoose.set("strictQuery", true);
+  return mongoose.connect(connection);
+};
 
-mongoose
-  .connect(DB_CONTACTS)
+connectToContactsDb(DB_CONTACTS)
   .then(() => {
     console.log("Database connection successful");
     app.listen(PORT, () => {

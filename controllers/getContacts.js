@@ -1,7 +1,9 @@
 const { Contact } = require("../utils/contactSchema");
 
 const getContacts = async () => {
-  const result = await Contact.find();
+  console.log("it works");
+  console.log(Contact.find({}));
+  const result = await Contact.find({});
   return result;
 };
 

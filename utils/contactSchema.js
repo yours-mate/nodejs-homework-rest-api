@@ -3,21 +3,18 @@ const contactSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, "Set name for the contact"],
     },
     email: {
       type: String,
-      required: [true, "Please enter email"],
       unique: true,
       lowercase: true,
     },
     phone: {
       type: String,
-      required: [true, "Please enter phone number"],
     },
     favorite: {
       type: Boolean,
-      required: [true],
       default: false,
     },
   },
