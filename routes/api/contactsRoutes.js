@@ -1,18 +1,18 @@
 const express = require("express");
 const {
-  listContacts,
+  getContacts,
   getContactById,
   removeContact,
   addContact,
   updateContact,
-} = require("../../models/contacts");
+} = require("../../controllers");
 const router = express.Router();
 const {
   contactValidation,
   isValidId,
-} = require("../../validations/middleware");
+} = require("../../middlewares/contactValidation");
 
-router.get("/", listContacts);
+router.get("/", getContacts);
 
 router.get("/:contactId", isValidId, getContactById);
 
