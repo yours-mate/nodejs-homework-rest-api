@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const getContacts = require("../models/getContacts");
+const { getContacts } = require("../controllers");
 
 const contactSchema = Joi.object({
   name: Joi.string().min(3).max(26).required(),
